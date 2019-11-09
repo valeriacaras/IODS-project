@@ -1,7 +1,76 @@
-# Insert chapter 2 title here
+# Exercise 2_Valeria Caras
 
 *Describe the work you have done this week and summarize your learning.*
 
 - Describe your work and results clearly. 
 - Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods.
 - Assume the reader has no previous knowledge of your data or the more advanced methods you are using.
+
+1.*This is the data from the international survey of Approaches to Learning. It icludes the attitute toward statistics, exam points, age, gender and anwers to the guestions which were combined in  the theree variables as deep,surface and strategic questions. Also the observations where the exam points variable is zero were excluded.The data included 166 observations and 7 variables.*
+
+2. *The plot illustrates the normality of the errors disributions.The normal distributions implies that the majority of the obserbations are located close to the regression line. Here only a part of the observations are close what is why normality is questionable.*
+*The plot illustrates the relationships between the variables.For example, we can see a negative correlation between points and age, surf and stra, points and surf and etc. There are strong correlations between points and age, age and attitude, age and deep, attitude and deep, age and stra, attitude and stra, deep and stra and etc.*
+
+3. *I have created a model with the dependent variable points and independent variables attitude, age and stra. The attitude variable has a high significance (p-value).It has 3.480 estimated coefficient with the positive relations with the dependent variable (when the value of the independent variable rises dependent also rises). Age and stra veriables are significant on 0.05 level. Age has a negative etsimate that means that when it rises the points fall. Srta has a positive relation with the points.*
+
+4. *The R-square is not very big since the model predicts around 20% of the points.F statistics compares the model with the model with only intercept. Here it has significant p-value which means that my model predicts better than a model with no predictors.*
+
+5.*Residuals vs Fitted values plot checks the assumption that size on errors should not depend on the explanotary variables.Here only a small part of the obseravations do not fit the pattern that is why there is no problem with the assumption.* 
+*Normal QQ-plot shows that the erros of the model are normally distributed since points mostly fall on regression line.*
+*Residuals vs Leverage diahnostic measures the impact of the single observation to the model. In the plot we can see several observations with the higher leverage which are located too below the line (-4-2) when the line is around 0.*
+
+***
+``{r child = "chapter2.Rmd"}
+read.csv(file = "learning2014")
+str(learning2014)
+dim(learning2014)
+library(ggplot2)
+#initialize plot with data and aesthetic mapping
+p1 <- ggplot(learning2014, aes(x = attitude, y = points))
+#define the visualization type (points)
+p2 <- p1 + geom_point()
+#draw the plot
+p2
+#add a regression line
+p3 <- p2 + geom_smooth(method = "lm")
+p3
+#add a main title and draw the plot
+p4 <- p3 + ggtitle ("Student's attitude versus exam points")
+p4
+#draw a scatter plot matrix of the variables in learning2014.
+#[-1] excludes the first column (gender)
+pairs(learning2014[-1])
+#access the GGally and ggplot2 libraries
+install.packages("GGally")
+library(GGally)
+library(ggplot2)
+
+#create a more advanced plot matrix with ggpairs()
+p <- ggpairs(learning2014, mapping = aes(alpha=0.3), lower = list(combo = wrap("facethist", bins = 20)))
+p
+
+qplot(attitude, points, data = learning2014) + geom_smooth(method = "lm")
+
+#create an plot matrix with ggpairs()
+ggpairs(learning2014, lower = list(combo = wrap("facethist", bins = 20)))
+
+#create a regression model with multiple explanatory variables
+my_model1 <- lm(points ~ attitude + age + stra, data = learning2014)
+summary(my_model1)
+
+par(mfrow = c(2,2))
+plot(my_model2 )
+
+#New observations
+new_attitudes <- c("Mia" = 3.8, "Mike"= 4.4, "Riikka" = 2.2, "Pekka" = 2.9)
+new_data <- data.frame(attitude = new_attitudes)
+#Print out the new data
+new_data
+#Predict the new students exam points based on attitude
+predict(m, newdata = new_data)
+```
+ 
+*** 
+  
+
+
