@@ -50,21 +50,23 @@ install.packages("GGally")
 install.packages("ggplot2")
 library(GGally)
 library(ggplot2)
+# create a more advanced plot matrix with ggpairs()
+p <- ggpairs(learning2014, mapping = aes(), lower = list(combo = wrap("facethist", bins = 20)))
+p
 # fit a linear model
 my_model <- lm(points ~ 1, data = learning2014)
-#create a regression model with multiple explanatory variables
+library(ggplot2)
+qplot(attitude, points, data = learning2014) + geom_smooth(method = "lm")
+qplot(attitude, age, data = learning2014) + geom_smooth(method = "lm")
+qplot(attitude, stra, data = learning2014) + geom_smooth(method = "lm")
+# create an plot matrix with ggpairs()
+ggpairs(learning2014, lower = list(combo = wrap("facethist", bins = 20)))
+#create a regression model with 3 multiple explanatory variables
 my_model1 <- lm(points ~ attitude + age + stra, data = learning2014)
 summary(my_model1)
 par(mfrow = c(2,2))
 plot(my_model1)
-#New observations
-m <- lm(points ~ attitude, data = learning2014)
-new_attitudes <- c("Mia" = 3.8, "Mike"= 4.4, "Riikka" = 2.2, "Pekka" = 2.9)
-new_data <- data.frame(attitude = new_attitudes)
-#Print out the new data
-new_data
-#Predict the new students exam points based on attitude
-predict(m, newdata = new_data)
+
 ```
  
   
