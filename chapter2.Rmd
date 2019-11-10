@@ -24,25 +24,24 @@ output: html_document
 *Normal QQ-plot shows that the erros of the model are normally distributed since points mostly fall on regression line.*
 *Residuals vs Leverage diahnostic measures the impact of the single observation to the model. In the plot we can see several observations with the higher leverage which are located too below the line (-4-2) when the line is around 0.*
 
-```
+```{r}
+chooseCRANmirror(graphics=FALSE, ind=1)
+install.packages("lmtest", repos = "http://cran.us.r-project.org")
+library(lmtest)
 learning2014 <- read.table("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/learning2014.txt", sep=",", header=TRUE)
-learning2019
+learning2014
 str(learning2014)
 dim(learning2014)
 library(ggplot2)
 #initialize plot with data and aesthetic mapping
-p1 <- ggplot(learning2019, aes(x = attitude, y = points))
+p1 <- ggplot(learning2014, aes(x = attitude, y = points))
 #define the visualization type (points)
 p2 <- p1 + geom_point()
-#draw the plot
-p2
 #add a regression line
 p3 <- p2 + geom_smooth(method = "lm")
-p3
 #add a main title and draw the plot
 p4 <- p3 + ggtitle ("Student's attitude versus exam points")
-``{r p4, echo=FALSE}
-plot (p4)
+p4
 #draw a scatter plot matrix of the variables in learning2014.
 #[-1] excludes the first column (gender)
 pairs(learning2014[-1])
@@ -51,10 +50,6 @@ install.packages("GGally")
 install.packages("ggplot2")
 library(GGally)
 library(ggplot2)
-#create a more advanced plot matrix with ggpairs()
-p <- ggpairs(learning2014, mapping = aes(), lower = list(combo = wrap("facethist", bins = 20)))
-{r p, echo=FALSE}
-qplot(attitude, points, data = learning2014) + geom_smooth(method = "lm")
 # fit a linear model
 my_model <- lm(points ~ 1, data = learning2014)
 #create a regression model with multiple explanatory variables
@@ -63,6 +58,7 @@ summary(my_model1)
 par(mfrow = c(2,2))
 plot(my_model1)
 #New observations
+m <- lm(points ~ attitude, data = learning2014)
 new_attitudes <- c("Mia" = 3.8, "Mike"= 4.4, "Riikka" = 2.2, "Pekka" = 2.9)
 new_data <- data.frame(attitude = new_attitudes)
 #Print out the new data
