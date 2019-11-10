@@ -387,17 +387,17 @@ summary {
 
 <div id="TOC">
 <ul>
-<li><a href="#about-the-project">About the project</a></li>
+<li><a href="#about-the-project_exercise1">About the project_exercise1</a></li>
 <li><a href="#the-course-introduction-to-open-data-science">The course Introduction to Open Data Science</a><ul>
 <li><a href="#httpsgithub.comvaleriacarasiods-project.git"><span>https://github.com/valeriacaras/IODS-project.git</span></a></li>
 </ul></li>
-<li><a href="#insert-chapter-2-title-here">Insert chapter 2 title here</a></li>
+<li><a href="#exercise-2">Exercise 2</a></li>
 </ul>
 </div>
 
 <hr />
-<div id="about-the-project" class="section level1">
-<h1>About the project</h1>
+<div id="about-the-project_exercise1" class="section level1">
+<h1>About the project_exercise1</h1>
 <p><em>Write a short description about the course and add a link to your GitHub repository here. This is an R Markdown (.Rmd) file so you can use R Markdown syntax.</em></p>
 </div>
 <div id="the-course-introduction-to-open-data-science" class="section level1">
@@ -408,14 +408,65 @@ summary {
 <hr />
 </div>
 </div>
-<div id="insert-chapter-2-title-here" class="section level1">
-<h1>Insert chapter 2 title here</h1>
+<div id="exercise-2" class="section level1">
+<h1>Exercise 2</h1>
 <p><em>Describe the work you have done this week and summarize your learning.</em></p>
 <ul>
 <li>Describe your work and results clearly.</li>
 <li>Assume the reader has an introductory course level understanding of writing and reading R code as well as statistical methods.</li>
 <li>Assume the reader has no previous knowledge of your data or the more advanced methods you are using.</li>
 </ul>
+<p>1.<em>This is the data from the international survey of Approaches to Learning. It icludes the attitute toward statistics, exam points, age, gender and anwers to the guestions which were combined in the theree variables as deep,surface and strategic questions. Also the observations where the exam points variable is zero were excluded.The data included 166 observations and 7 variables.</em></p>
+<ol start="2" style="list-style-type: decimal">
+<li><p><em>The plot illustrates the normality of the errors disributions.The normal distributions implies that the majority of the obserbations are located close to the regression line. Here only a part of the observations are close what is why normality is questionable.</em> <em>The plot illustrates the relationships between the variables.For example, we can see a negative correlation between points and age, surf and stra, points and surf and etc. There are strong correlations between points and age, age and attitude, age and deep, attitude and deep, age and stra, attitude and stra, deep and stra and etc.</em></p></li>
+<li><p><em>I have created a model with the dependent variable points and independent variables attitude, age and stra. The attitude variable has a high significance (p-value).It has 3.480 estimated coefficient with the positive relations with the dependent variable (when the value of the independent variable rises dependent also rises). Age and stra veriables are significant on 0.05 level. Age has a negative etsimate that means that when it rises the points fall. Srta has a positive relation with the points.</em></p></li>
+<li><p><em>The R-square is not very big since the model predicts around 20% of the points.F statistics compares the model with the model with only intercept. Here it has significant p-value which means that my model predicts better than a model with no predictors.</em></p></li>
+</ol>
+<p>5.<em>Residuals vs Fitted values plot checks the assumption that size on errors should not depend on the explanotary variables.Here only a small part of the obseravations do not fit the pattern that is why there is no problem with the assumption.</em> <em>Normal QQ-plot shows that the erros of the model are normally distributed since points mostly fall on regression line.</em> <em>Residuals vs Leverage diahnostic measures the impact of the single observation to the model. In the plot we can see several observations with the higher leverage which are located too below the line (-4-2) when the line is around 0.</em></p>
+<pre><code>learning2014 &lt;- read.table(&quot;http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/learning2014.txt&quot;, sep=&quot;,&quot;, header=TRUE)
+learning2019
+str(learning2014)
+dim(learning2014)
+library(ggplot2)
+#initialize plot with data and aesthetic mapping
+p1 &lt;- ggplot(learning2019, aes(x = attitude, y = points))
+#define the visualization type (points)
+p2 &lt;- p1 + geom_point()
+#draw the plot
+p2
+#add a regression line
+p3 &lt;- p2 + geom_smooth(method = &quot;lm&quot;)
+p3
+#add a main title and draw the plot
+p4 &lt;- p3 + ggtitle (&quot;Student's attitude versus exam points&quot;)
+``{r p4, echo=FALSE}
+plot (p4)
+#draw a scatter plot matrix of the variables in learning2014.
+#[-1] excludes the first column (gender)
+pairs(learning2014[-1])
+#access the GGally and ggplot2 libraries
+install.packages(&quot;GGally&quot;)
+install.packages(&quot;ggplot2&quot;)
+library(GGally)
+library(ggplot2)
+#create a more advanced plot matrix with ggpairs()
+p &lt;- ggpairs(learning2014, mapping = aes(), lower = list(combo = wrap(&quot;facethist&quot;, bins = 20)))
+{r p, echo=FALSE}
+qplot(attitude, points, data = learning2014) + geom_smooth(method = &quot;lm&quot;)
+# fit a linear model
+my_model &lt;- lm(points ~ 1, data = learning2014)
+#create a regression model with multiple explanatory variables
+my_model1 &lt;- lm(points ~ attitude + age + stra, data = learning2014)
+summary(my_model1)
+par(mfrow = c(2,2))
+plot(my_model1)
+#New observations
+new_attitudes &lt;- c(&quot;Mia&quot; = 3.8, &quot;Mike&quot;= 4.4, &quot;Riikka&quot; = 2.2, &quot;Pekka&quot; = 2.9)
+new_data &lt;- data.frame(attitude = new_attitudes)
+#Print out the new data
+new_data
+#Predict the new students exam points based on attitude
+predict(m, newdata = new_data)</code></pre>
 <hr />
 </div>
 
