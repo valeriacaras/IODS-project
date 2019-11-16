@@ -1,0 +1,194 @@
+---
+title: "chapter3"
+author: "Valeria Caras"
+date: "11/13/2019"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Exercise 3
+
+
+```{r}
+alc <- read.csv( file="data/alc.csv", sep=",")
+dim(alc)
+str(alc)
+```
+This is a combined data from two original datasets on student achievement in secondary education of two Portuguese schools. It was merged to include only the students who answered the questionnaire in both math and portuguese classes.New column high use was created when'alc_use' is greater than 2. Data has 382 observations of 35 variables.
+**I choose the 4 following variables to test their  relationships with high alcohol consumption.**
+1. Pstatus - parent's cohabitation status (binary: 'T' - living together or 'A' - apart. I suppose that living apart with the students leads to high alcohol consumption.
+2. famrel - quality of family relationships (numeric: from 1 - very bad to 5 - excellent). I suppose that bad family relationships result on high alcohol consumption.
+3. goout - going out with friends (numeric: from 1 - very low to 5 - very high). I suppose that student who often go out with friends consume more alcohol.
+4. romantic - with a romantic relationship (binary: yes or no). I suppose that students who are not in relationships consume more alcohol.  
+
+
+```{r}
+library(tidyr); library(dplyr); library(ggplot2)
+glimpse(alc)
+#use gather() to gather columns into key-value pairs and then glimpse() at the resulting data
+gather(alc) %>% glimpse
+#draw a bar plot of each variable
+gather(alc) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free")+geom_bar()
+```
+ 
+   
+Bar plots illustrate the following distribution of the variables:
+**Pstatus:** the majotiry of students have parents living together
+**romantic:** twice more students are no in romantic relations
+**famrel:** the majority of the respondents have very good relations with parents,less have excellent and good relations while thre are students who have bad and very bad relations
+**goout:** has a normal distribution.
+
+
+```{r}
+
+library(dplyr); library(ggplot2)
+# produce summary statistics by group
+alc %>% group_by(sex, high_use) %>% summarise(count = mean(G3))
+library(ggplot2)
+#initialize a plot of high_use and G3
+g1 <- ggplot(alc, aes(x = high_use, y = G3))
+#define the plot as a boxplot and draw it
+g1 + geom_boxplot() + ylab("grade")
+#initialise a plot of high_use and absences
+g2 <- ggplot(alc, aes(x = high_use, y = absences))
+#define the plot as a boxplot and draw it
+g2 + geom_boxplot() + ylab("Student absences by alcohol consumption and sex")
+#my boxplots
+ g3 <- ggplot(alc, aes(x = high_use, y = goout))
+ g3 + geom_boxplot() + ylab("Go out by alcohol consumption")
+ 
+ g4 <- ggplot(alc, aes(x = high_use, y = famrel))
+ g4 + geom_boxplot() + ylab("Family relations by alcohol consumption")
+ 
+ 
+```
+
+First here is the boxplot from the exercise which shows the relations between high use of alcohol and final grades. Here we seen a lot of outliners with the low grades and several with high grades who high consume alcohol.
+Next there are boxplots on absences. Both boxpots are located quite low which shows the low level of abcences and true assumtion on higher alcohol use. However there are a lot of outliners who do not miss school and consume more as well as go to school and do not consume.
+
+1. I have constructed the *boxplot on goout and high use of alcohol*. The true has a higher probability with the minimum 3 and max 5 which is often.The firts boxplot shows that 75% observanions are located low from 1 to 3 (students who go out rare and for them high use of alcohol is false). However there is one outliner which goes out often (5) and does not drink. -> *I have support for my hypothesis about go out and high alcohol.*
+
+2. I have constructed the *boxplot on family relations and high use of alcohol.*
+In the fist plot we see that the asumption is false for people who have good (3) and excellent  relations with parents (5) which coincides with my assumption + we have outliners who have bad relations with parents. The second boxplot illustrates that the assumtion is true for people who have bad and  good relations with one outliner who has bad relations but does not consume much -> *I have support for my hypothesis about family relations and high alcohol.*
+
+3. I also have tried to construct *boxpolts for variables Pstatus and romantic* but they look very stange. -> *I suppose there are not significant relations between Pstatus and romantic relations with high alcohol consumption but let's test it anyway in regression.*
+
+```{r}
+#find the model with glm()
+m <- glm(high_use ~ famrel + goout+romantic+Pstatus, data = alc, family = "binomial")
+
+#print out a summary of the model
+summary(m)
+# print out the coefficients of the model
+coef(m)
+#compute odds ratios (OR)
+OR <- coef(m) %>% exp
+#compute confidence intervals (CI)
+CI <- confint(m)
+#print out the odds ratios with their confidence intervals
+cbind(OR, CI)
+```
+In my model we see that only *famrel and goout variables are significant*. Famrel coeffcient is -0.3731507 which according to the scale of the variable means that better family relations lead to less alcohol use. Goout coefficient is  0.7959347 which means that often go out with friens leads to higher alcohol consumotion. So my hypothesis regarding these variables are testified while regarding status of parents and romantic relations not.
+Odds show a higher than 1 probability of success (high alcohol consumption) 
+for goout. Odds for presence of famreal is also higher (97.5% interval) than absence.
+```{r}
+#Binary predictions
+# predict() the probability of high_use
+probabilities <- predict(m, type = "response")
+
+#add the predicted probabilities to 'alc'
+alc <- mutate(alc, probability = probabilities)
+
+#use the probabilities to make a prediction of high_use
+alc <- mutate(alc, prediction = "high_use")
+
+#see the last ten original classes, predicted probabilities, and class predictions
+select(alc, famrel, goout, high_use, probability, prediction) %>% tail(10)
+#tabulate the target variable versus the predictions
+table(high_use = alc$high_use, prediction = alc$high_use)
+# access dplyr and ggplot2
+library(dplyr); library(ggplot2)
+# initialize a plot of 'high_use' versus 'probability' in 'alc'
+g6 <- ggplot(alc, aes(x = "high_use", y = "probability"))
+# define the geom as points and draw the plot
+g6+geom_point()
+# tabulate the target variable versus the predictions
+table(high_use = alc$high_use, prediction = alc$prediction)%>%prop.table%>%addmargins
+
+#accuracy and loss function
+# define a loss function (mean prediction error)
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+
+# call loss_func to compute the average number of wrong predictions in the (training) data
+loss_func(class = alc$high_use, prob = 0)
+loss_func(class = alc$high_use, prob = 1)
+loss_func(class = alc$high_use, prob = alc$probability)
+```
+I construct a *'confusion mattrix'* which  describes the performance of my model with such predictors as famrel and goout. We see that the majority of cases (268) are cases in which we predicted False and are actually False. There are no cases (0) where we predicted True, but actual is False (so no Type I error) and no cases where we predicted False, True in actual (no Type II error). And there are 114 cases where we predicted True, and True in actual. *So we can conlude that my model well predicts the target variable.*
+Next I computed the total proportion of inaccurately classified individuals.
+We see that the average number of wrong predictions is 0.2984, while the correct predictions is 0.7015707. *So the model predicts quite good.*
+  
+  
+```{r}
+#Cross-validation
+#define a loss function (average prediction error)
+loss_func <- function(class, prob) {
+  n_wrong <- abs(class - prob) > 0.5
+  mean(n_wrong)
+}
+
+#compute the average number of wrong predictions in the (training) data
+
+#K-fold cross-validation
+library(boot)
+cv <- cv.glm(data = alc, cost = loss_func, glmfit = m, K = nrow(alc))
+#average number of wrong predictions in the cross validation
+cv$delta[1]
+# 10-fold cross-validation 
+cost <- function(r, pi = 0) mean(abs(r-pi) > 0.5)
+
+alc.glm <- glm(high_use ~ famrel+goout, binomial, data = alc)
+(cv.err <- cv.glm(alc, alc.glm, cost, K = nrow(alc))$delta)
+(cv.11.err <- cv.glm(alc, alc.glm, cost, K = 10)$delta)
+```
+Here a made a cross-validation from the DataCamp + made myself a **10-fold cross-validation**. My model has a little bit higher prediction error using 10-fold cross-validation) compared to the model introduced in DataCamp (which had about 0.26 error). So it is not better.
+
+```{r}
+#cross-validation with 6 predictors
+cost <- function(r, pi = 0) mean(abs(r-pi) > 0.5)
+
+alc.glm <- glm(high_use ~ famrel+goout+sex+absences+freetime+paid, binomial, data = alc)
+(cv.err <- cv.glm(alc, alc.glm, cost, K = nrow(alc))$delta)
+(cv.11.err <- cv.glm(alc, alc.glm, cost, K = 10)$delta)
+#cross-validation with 4 predictors: sex, absences, freetime, paid
+cost <- function(r, pi = 0) mean(abs(r-pi) > 0.5)
+
+alc.glm <- glm(high_use ~ sex+absences+freetime+paid, binomial, data = alc)
+(cv.err <- cv.glm(alc, alc.glm, cost, K = nrow(alc))$delta)
+(cv.11.err <- cv.glm(alc, alc.glm, cost, K = 10)$delta)
+#cross-validation with 4 predictors: famrel, goout, absences, freetime
+cost <- function(r, pi = 0) mean(abs(r-pi) > 0.5)
+
+alc.glm <- glm(high_use ~ famrel+goout+absences+freetime, binomial, data = alc)
+(cv.err <- cv.glm(alc, alc.glm, cost, K = nrow(alc))$delta)
+(cv.11.err <- cv.glm(alc, alc.glm, cost, K = 10)$delta)
+#cross-validation with 2 predictors: famrel, absences
+cost <- function(r, pi = 0) mean(abs(r-pi) > 0.5)
+
+alc.glm <- glm(high_use ~ famrel+absences, binomial, data = alc)
+(cv.err <- cv.glm(alc, alc.glm, cost, K = nrow(alc))$delta)
+(cv.11.err <- cv.glm(alc, alc.glm, cost, K = 10)$delta)
+```
+Here I Perform cross-validation to compare the performance of different logistic regression models. I first  test model with such predictors as 
+famrel, goout, sex, absences, freetime, paid. It is guite a good model since the errors are lower than before and the training error is less than the test error. Now let's try to decrease the number of predictors.
+I have tried the model with 4 predictors: sex, absences, freetime, paid. Here again errors are higher and test erroes are higher.
+I also tried model with such 4 predictors: famrel, goout, absences, freetime. Here errors are higher than in model with 6 predictors but lower than in the previous model. Also testing errors in 10 validation are less than in training, so the  model is quite good.
+In the end I am trying the model with 2 predictors:family relations and absences. Errors are the highest but the testing ones  are less than training.
+
+**Conclusion:**The higher number of the predictors result in the lower errors of the model since the more factors we have the much our model explains. 
