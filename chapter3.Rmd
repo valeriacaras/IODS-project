@@ -98,7 +98,12 @@ cbind(OR, CI)
 
 
 In my model we see that only *famrel and goout variables are significant*. Famrel coeffcient is -0.3731507 which according to the scale of the variable means that better family relations lead to less alcohol use. Goout coefficient is  0.7959347 which means that often go out with friens leads to higher alcohol consumotion. So my hypothesis regarding these variables are testified while regarding status of parents and romantic relations not.
+<<<<<<< HEAD
 Odds show that go out twice increases the probability of alcohol consumption. Good family relations decrease the alcohol consumption by 68%, romantic relations also decrease the alcohol by 75% as well as higher status pf parents by 90%.
+=======
+Odds show a higher than 1 probability of success (high alcohol consumption) 
+for goout. Odds for presence of famreal is also higher (97.5% interval) than absence.
+>>>>>>> 1ec0b112ee3f4f518ef03287b10fa255ad0529af
 ```{r}
 #Binary predictions
 # predict() the probability of high_use

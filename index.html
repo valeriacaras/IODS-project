@@ -429,7 +429,11 @@ summary {
 install.packages(&quot;lmtest&quot;, repos = &quot;http://cran.us.r-project.org&quot;)</code></pre>
 <pre><code>## 
 ## The downloaded binary packages are in
+<<<<<<< HEAD
 ##  /var/folders/8t/x1h4shkx7ms9f1___g0qnkhr0000gn/T//RtmpR1DO3W/downloaded_packages</code></pre>
+=======
+##  /var/folders/8t/x1h4shkx7ms9f1___g0qnkhr0000gn/T//RtmpdaG2aw/downloaded_packages</code></pre>
+>>>>>>> 1ec0b112ee3f4f518ef03287b10fa255ad0529af
 <pre class="r"><code>library(lmtest)</code></pre>
 <pre><code>## Loading required package: zoo</code></pre>
 <pre><code>## 
@@ -636,11 +640,19 @@ pairs(learning2014[-1])</code></pre>
 install.packages(&quot;GGally&quot;)</code></pre>
 <pre><code>## 
 ## The downloaded binary packages are in
+<<<<<<< HEAD
 ##  /var/folders/8t/x1h4shkx7ms9f1___g0qnkhr0000gn/T//RtmpR1DO3W/downloaded_packages</code></pre>
 <pre class="r"><code>install.packages(&quot;ggplot2&quot;)</code></pre>
 <pre><code>## 
 ## The downloaded binary packages are in
 ##  /var/folders/8t/x1h4shkx7ms9f1___g0qnkhr0000gn/T//RtmpR1DO3W/downloaded_packages</code></pre>
+=======
+##  /var/folders/8t/x1h4shkx7ms9f1___g0qnkhr0000gn/T//RtmpdaG2aw/downloaded_packages</code></pre>
+<pre class="r"><code>install.packages(&quot;ggplot2&quot;)</code></pre>
+<pre><code>## 
+## The downloaded binary packages are in
+##  /var/folders/8t/x1h4shkx7ms9f1___g0qnkhr0000gn/T//RtmpdaG2aw/downloaded_packages</code></pre>
+>>>>>>> 1ec0b112ee3f4f518ef03287b10fa255ad0529af
 <pre class="r"><code>library(GGally)</code></pre>
 <pre><code>## Registered S3 method overwritten by 'GGally':
 ##   method from   
@@ -884,7 +896,11 @@ cbind(OR, CI)</code></pre>
 ## goout       2.2165118  0.5699984  1.0354467
 ## romanticyes 0.7538169 -0.8126779  0.2317825
 ## PstatusT    0.9031000 -0.8753200  0.7157342</code></pre>
+<<<<<<< HEAD
 <p>In my model we see that only <em>famrel and goout variables are significant</em>. Famrel coeffcient is -0.3731507 which according to the scale of the variable means that better family relations lead to less alcohol use. Goout coefficient is 0.7959347 which means that often go out with friens leads to higher alcohol consumotion. So my hypothesis regarding these variables are testified while regarding status of parents and romantic relations not. Odds show that go out twice increases the probability of alcohol consumption. Good family relations decrease the alcohol consumption by 68%, romantic relations also decrease the alcohol by 75% as well as higher status pf parents by 90%.</p>
+=======
+<p>In my model we see that only <em>famrel and goout variables are significant</em>. Famrel coeffcient is -0.3731507 which according to the scale of the variable means that better family relations lead to less alcohol use. Goout coefficient is 0.7959347 which means that often go out with friens leads to higher alcohol consumotion. So my hypothesis regarding these variables are testified while regarding status of parents and romantic relations not. Odds show a higher than 1 probability of success (high alcohol consumption) for goout. Odds for presence of famreal is also higher (97.5% interval) than absence.</p>
+>>>>>>> 1ec0b112ee3f4f518ef03287b10fa255ad0529af
 <pre class="r"><code>#Binary predictions
 # predict() the probability of high_use
 probabilities &lt;- predict(m, type = &quot;response&quot;)
@@ -965,7 +981,11 @@ alc.glm &lt;- glm(high_use ~ famrel+goout, binomial, data = alc)
 (cv.err &lt;- cv.glm(alc, alc.glm, cost, K = nrow(alc))$delta)</code></pre>
 <pre><code>## [1] 0.2460733 0.2460733</code></pre>
 <pre class="r"><code>(cv.11.err &lt;- cv.glm(alc, alc.glm, cost, K = 10)$delta)</code></pre>
+<<<<<<< HEAD
 <pre><code>## [1] 0.2643979 0.2573052</code></pre>
+=======
+<pre><code>## [1] 0.2591623 0.2539678</code></pre>
+>>>>>>> 1ec0b112ee3f4f518ef03287b10fa255ad0529af
 <p>Here a made a cross-validation from the DataCamp + made myself a <strong>10-fold cross-validation</strong>. My model has a little bit higher prediction error using 10-fold cross-validation) compared to the model introduced in DataCamp (which had about 0.26 error). So it is not better.</p>
 <pre class="r"><code>#cross-validation with 6 predictors
 cost &lt;- function(r, pi = 0) mean(abs(r-pi) &gt; 0.5)
@@ -974,7 +994,11 @@ alc.glm &lt;- glm(high_use ~ famrel+goout+sex+absences+freetime+paid, binomial, 
 (cv.err &lt;- cv.glm(alc, alc.glm, cost, K = nrow(alc))$delta)</code></pre>
 <pre><code>## [1] 0.2225131 0.2205532</code></pre>
 <pre class="r"><code>(cv.11.err &lt;- cv.glm(alc, alc.glm, cost, K = 10)$delta)</code></pre>
+<<<<<<< HEAD
 <pre><code>## [1] 0.2277487 0.2246169</code></pre>
+=======
+<pre><code>## [1] 0.2198953 0.2170445</code></pre>
+>>>>>>> 1ec0b112ee3f4f518ef03287b10fa255ad0529af
 <pre class="r"><code>#cross-validation with 4 predictors: sex, absences, freetime, paid
 cost &lt;- function(r, pi = 0) mean(abs(r-pi) &gt; 0.5)
 
@@ -982,7 +1006,11 @@ alc.glm &lt;- glm(high_use ~ sex+absences+freetime+paid, binomial, data = alc)
 (cv.err &lt;- cv.glm(alc, alc.glm, cost, K = nrow(alc))$delta)</code></pre>
 <pre><code>## [1] 0.2591623 0.2594707</code></pre>
 <pre class="r"><code>(cv.11.err &lt;- cv.glm(alc, alc.glm, cost, K = 10)$delta)</code></pre>
+<<<<<<< HEAD
 <pre><code>## [1] 0.2643979 0.2641443</code></pre>
+=======
+<pre><code>## [1] 0.2722513 0.2727584</code></pre>
+>>>>>>> 1ec0b112ee3f4f518ef03287b10fa255ad0529af
 <pre class="r"><code>#cross-validation with 4 predictors: famrel, goout, absences, freetime
 cost &lt;- function(r, pi = 0) mean(abs(r-pi) &gt; 0.5)
 
@@ -990,7 +1018,11 @@ alc.glm &lt;- glm(high_use ~ famrel+goout+absences+freetime, binomial, data = al
 (cv.err &lt;- cv.glm(alc, alc.glm, cost, K = nrow(alc))$delta)</code></pre>
 <pre><code>## [1] 0.2486911 0.2479510</code></pre>
 <pre class="r"><code>(cv.11.err &lt;- cv.glm(alc, alc.glm, cost, K = 10)$delta)</code></pre>
+<<<<<<< HEAD
 <pre><code>## [1] 0.2434555 0.2389600</code></pre>
+=======
+<pre><code>## [1] 0.2460733 0.2432431</code></pre>
+>>>>>>> 1ec0b112ee3f4f518ef03287b10fa255ad0529af
 <pre class="r"><code>#cross-validation with 2 predictors: famrel, absences
 cost &lt;- function(r, pi = 0) mean(abs(r-pi) &gt; 0.5)
 
@@ -998,7 +1030,11 @@ alc.glm &lt;- glm(high_use ~ famrel+absences, binomial, data = alc)
 (cv.err &lt;- cv.glm(alc, alc.glm, cost, K = nrow(alc))$delta)</code></pre>
 <pre><code>## [1] 0.2931937 0.2938516</code></pre>
 <pre class="r"><code>(cv.11.err &lt;- cv.glm(alc, alc.glm, cost, K = 10)$delta)</code></pre>
+<<<<<<< HEAD
 <pre><code>## [1] 0.2827225 0.2871906</code></pre>
+=======
+<pre><code>## [1] 0.2931937 0.2984978</code></pre>
+>>>>>>> 1ec0b112ee3f4f518ef03287b10fa255ad0529af
 <p>Here I Perform cross-validation to compare the performance of different logistic regression models. I first test model with such predictors as famrel, goout, sex, absences, freetime, paid. It is guite a good model since the errors are lower than before and the training error is less than the test error. Now let’s try to decrease the number of predictors. I have tried the model with 4 predictors: sex, absences, freetime, paid. Here again errors are higher and test erroes are higher. I also tried model with such 4 predictors: famrel, goout, absences, freetime. Here errors are higher than in model with 6 predictors but lower than in the previous model. Also testing errors in 10 validation are less than in training, so the model is quite good. In the end I am trying the model with 2 predictors:family relations and absences. Errors are the highest but the testing ones are less than training.</p>
 <p><strong>Conclusion:</strong>The higher number of the predictors result in the lower errors of the model since the more factors we have the much our model explains.</p>
 </div>
