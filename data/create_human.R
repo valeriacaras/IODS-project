@@ -1,7 +1,6 @@
 
+
 # Data wrangling week 4_Caras Valeria_25.11
-
-
 d <- read.csv("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/human_development.csv", stringsAsFactors = F)
 gii <- read.csv("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/gender_inequality.csv", stringsAsFactors = F, na.strings = "..")
 str(d)
@@ -10,6 +9,7 @@ dim(d)
 dim(gii)
 summary(d)
 summary(gii)
+
 
 #These are datasets on the human development indices which iclude different variables on development.
 #D data has 195 obs. on 8 variables while gii has 195 obs. on 10 variables.
@@ -47,7 +47,9 @@ human <- mutate(human, Edu2.FM = (Edu2.F + Edu2.M))
 human <- mutate(human, Labo.FM = (Labo.F + Labo.M))
 str(human)
 # now the joined data has 195 obs. of  19 variables
+
 # save new human data and read
+
 write.csv(human, file = "data/human.csv", row.names = FALSE)
 read.csv( file="data/human.csv")
 
