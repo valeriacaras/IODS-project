@@ -26,7 +26,11 @@ corrplot(cor_matrix, method="circle", type = "upper",cl.pos = "b", tl.pos = "d",
 ```
 
 This data has 506 obs. of  14 variables which contain information about different indicators of Boston city as per capita crime rate, index of accessibility to radial highways and etc.
+<<<<<<< HEAD
 In the first plot we see the distibution of variables. It looks like only rm has a normal distribution while crime, chas, lstat are shifted to the left, age to the right and etc.
+=======
+In the fist plot we seen the distibution of variables. It looks like only rm has a normal distribution while crime, chas, lstat are shifted to the left, age to the right and etc.
+>>>>>>> 77475a1150362e7e1077341fd0cd3c34d7f8d6cc
 In the second plot positive correlations are displayed in blue and negative correlations in red color. Color intensity and the size of the circle are proportional to the correlation coefficients. For example, the is strong positive correlation between such variables as crime and rad and tax, between indus and nox, age and tax. Negative correlations between dis and nox,age and dis, medv and lstat. 
 
 ```{r }

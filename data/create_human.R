@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 # Data wrangling week 4_Caras Valeria
+=======
+# Data wrangling week 5_Caras Valeria
+>>>>>>> 77475a1150362e7e1077341fd0cd3c34d7f8d6cc
 d <- read.csv("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/human_development.csv", stringsAsFactors = F)
 gii <- read.csv("http://s3.amazonaws.com/assets.datacamp.com/production/course_2218/datasets/gender_inequality.csv", stringsAsFactors = F, na.strings = "..")
 str(d)
@@ -7,8 +11,13 @@ dim(d)
 dim(gii)
 summary(d)
 summary(gii)
+<<<<<<< HEAD
  #These are datasets on the human development indices which iclude different variables on development.
 #D data has 195 obs. on 8 variables while gii has 195 obs. on 10 variables.
+=======
+ #These are datasets on the human development indices which iclude different variavles on development.
+#Data data has 195 obs. on 8 variables while gii has 195 obs. on 10 variables.
+>>>>>>> 77475a1150362e7e1077341fd0cd3c34d7f8d6cc
 # Change variables names
 
 names(gii)
@@ -43,9 +52,12 @@ human <- mutate(human, Edu2.FM = (Edu2.F + Edu2.M))
 human <- mutate(human, Labo.FM = (Labo.F + Labo.M))
 str(human)
 # now the joined data has 195 obs. of  19 variables
+<<<<<<< HEAD
 # save new human data
 write.csv(human, file = "data/human.csv", row.names = FALSE)
 
 read.csv( file="data/human.csv")
 
+=======
+>>>>>>> 77475a1150362e7e1077341fd0cd3c34d7f8d6cc
          
