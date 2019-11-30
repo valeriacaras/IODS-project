@@ -4,9 +4,11 @@ author: "Valeria Caras"
 date: "11/27/2019"
 output: html_document
 ---
+
+## Exercise 5
 ```{r}
-#read data
-read.csv( file="data/newhuman.csv", row.names = 1)
+# read data
+newhuman <- read.csv( file="data/newhuman.csv", row.names = 1)
 summary(newhuman)
 
 library(dplyr)
