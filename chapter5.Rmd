@@ -1,0 +1,121 @@
+---
+title: "chapter5.Rmd"
+author: "Valeria Caras"
+date: "11/27/2019"
+output: html_document
+---
+```{r}
+#read data
+read.csv( file="data/newhuman.csv", row.names = 1)
+summary(newhuman)
+
+library(dplyr)
+# Access GGally
+library(GGally)
+library(corrplot)
+# visualize the 'human_' variables
+ggpairs(newhuman)
+
+# compute the correlation matrix and visualize it with corrplot
+cor(newhuman)%>%corrplot()
+
+```
+
+
+Data has 155 observations and 8 variables. I also removed the country variable from it before in R script. The variable Edu.Exp is normally distributed and variable  Edu2.FM has an almost normal distribution.  Labo.FM , Life.Exp are very moved to the right while other variables to the left. 
+In the plot, positive correlations are displayed in blue and negative correlations in red color. Color intensity and the size of the circle are proportional to the correlation coefficients.
+In the correlation matrix, we see the strong positive correlation between such variables as Mat.Mor and  Edu2.FM, Mat.Mor and Edu.Exp, Ado.Birth and Life.Exp  and etc. Strong negative correlations are between  Mat.Mor and Ado.Birth, Life.Exp and Edu.Exp, etc. Such a variable as Parli.F does not correlate with any others.  
+
+```{r}
+## PCA on the not standardized human data.
+# perform principal component analysis (with the SVD method)
+pca_newhuman <- prcomp(newhuman)
+
+# create and print out a summary of pca_human
+s <- summary(pca_newhuman)
+s
+
+# rounded percentages of variance captured by each PC
+pca_pr <- round(100*s$importance[2,], digits = 1) 
+
+# print out the percentages of variance
+pca_pr
+
+# create object pc_lab to be used as axis labels
+pc_lab <- paste0(names(pca_pr), " (", pca_pr, "%)")
+
+# draw a biplot
+biplot(pca_newhuman, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab[1], ylab = pc_lab[2])
+```
+
+
+The PCA on not  standardized data is a mess. PC1 exmplains 100% while PC2 0%. The analysis is wrong. Let's strandartize data and run PCA again.
+
+```{r}
+## PCA on the standardized human data.
+# standardize the variables
+human_std <- scale(newhuman)
+# print out summaries of the standardized variables
+summary(human_std)
+# perform principal component analysis (with the SVD method)
+pca_human <- prcomp(human_std)
+
+# create and print out a summary of pca_human
+s <- summary(pca_human)
+s
+
+# rounded percentages of variance captured by each PC
+pca_pr <- round(100*s$importance[2,], digits = 1) 
+
+# print out the percentages of variance
+pca_pr
+
+# create object pc_lab to be used as axis labels
+pc_lab <- paste0(names(pca_pr), " (", pca_pr, "%)")
+
+# draw a biplot
+biplot(pca_human, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab[1], ylab = pc_lab[2])
+```
+
+
+The results with standardized data look fine. PC1 captures 53.6% of the variance in the data while PC2 16.2% variance. They are uncorrelated and PC2 is definitely less important in terms of data capture. Such variables as Adolescent birth rate and Maternal mortality ratio are highly positively correlated with each other and they contribute to the dimensions of PC1. Interestingly PC1 includes mostly developing African countries. There is no correlation between these two variables and Labo.FM and Parli.F. 
+Labo.FM and Parli.F also do not correlate with the variables which contribute to the dimensions of PC2 as Edu.Exp, GNI, Life.Exp and Edu2.FM. However Expected Years of Education, Gross National Income, Life Expectancy at Birth and Population with Secondary Education are all correlated with each other. PC2 includes more economically developed countries of Europe, also US, South Korea and etc.
+
+```{r}
+library(FactoMineR)
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+data("tea")
+str(tea)
+dim(tea)
+
+# column names to keep in the dataset
+keep_columns <- c("Tea", "How", "how", "sugar", "where", "lunch")
+
+# select the 'keep_columns' to create a new dataset
+tea_time <- select(tea, one_of(keep_columns))
+
+# look at the summaries and structure of the data
+summary(tea_time)
+str(tea_time)
+
+# visualize the dataset
+gather(tea_time) %>% ggplot(aes(value)) + facet_wrap("key", scales = "free") + geom_bar() + theme(axis.text.x = element_text(angle = 45, hjust = 1, size = 8))
+
+# multiple correspondence analysis
+mca <- MCA(tea_time, graph = FALSE)
+# summary of the model
+summary(mca)
+# visualize MCA
+plot(mca, invisible=c("ind"), habillage = "quali")
+
+
+```
+
+
+The tea data has 300 obs. of  36 variables. In the plot we see that variables are categorical that is why we apply multiple correspondence analysis.
+Let's interpret the MCA results. In Eigenvalues we got 11 dimensions which are quite a lot. The Dim1 captures the most variance while the Dim11 the least. Later we see  Categories summary only for the first three dimensions as the most important. *Dim 1:* the highest contribution of such variables as tea bag and unpackaged - they also have the highest correlation in comparison with other variables. *Dim2:* the highest contribution and correlation for tea bag+unpackaged. *Dim 3:* other contribute and correlate the most.
+In the Categorical variables, we see the correlation between variables and dimensions. The strongest are between how variable and Dim 1, Dim 2 and between where and Dim 1, Dim 2. Also strong between How and Dim 2, Dim 3.
+In the plot, we see that Dim 1 captures only 15,24% of the variance in data while Dim 2 captures 14,23%.
+how similar are the variables based on the distance between them. As such, such variables as tea bag, chain store are very close, unpacked and tea shop also close. Other is distant from most of the variables.
