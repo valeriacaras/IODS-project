@@ -80,8 +80,8 @@ biplot(pca_human, cex = c(0.8, 1), col = c("grey40", "deeppink2"), xlab = pc_lab
 ```
 
 
-The results with standardized data look fine. PC1 captures 53.6% of the variance in the data while PC2 16.2% variance. They are uncorrelated and PC2 is definitely less important in terms of data capture. Such variables as Adolescent birth rate and Maternal mortality ratio are highly positively correlated with each other and they contribute to the dimensions of PC1. Interestingly PC1 includes mostly developing African countries. There is no correlation between these two variables and Labo.FM and Parli.F. 
-Labo.FM and Parli.F also do not correlate with the variables which contribute to the dimensions of PC2 as Edu.Exp, GNI, Life.Exp and Edu2.FM. However Expected Years of Education, Gross National Income, Life Expectancy at Birth and Population with Secondary Education are all correlated with each other. PC2 includes more economically developed countries of Europe, also US, South Korea and etc.
+The results with standardized data look fine. PC1 captures 53.6% of the variance in the data while PC2 16.2% variance. They are uncorrelated and PC2 is definitely less important in terms of data capture. Such variables as Adolescent birth rate and Maternal mortality ratio are highly positively correlated with each other and they contribute to the dimensions of PC1. There is no correlation between these two variables and Labo.FM and Parli.F which contribute to the dimensions of PC2.
+Labo.FM and Parli.F also do not correlate with the variables  as Edu.Exp, GNI, Life.Exp and Edu2.FM. However Expected Years of Education, Gross National Income, Life Expectancy at Birth and Population with Secondary Education are all correlated with each other. 
 
 ```{r}
 library(FactoMineR)
