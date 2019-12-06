@@ -1,0 +1,187 @@
+---
+title: "chapter6.Rmd"
+author: "Valeria Caras"
+date: "12/4/2019"
+output: html_document
+---
+## Exercise 6
+
+# Part 1. RATS
+```{r}
+## RATS data
+
+# read RATS (see comments in my script, already done)
+RATS <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/rats.txt", header = TRUE, sep = '\t')
+
+# Access the packages dplyr and tidyr
+library(dplyr)
+library(tidyr)
+
+# Factor variables ID and Group
+RATS$ID <- factor(RATS$ID)
+RATS$Group <- factor(RATS$Group)
+# Convert data to long form
+RATSL <- RATS %>%
+  gather(key = WD, value = Weight, -ID, -Group) %>%
+  mutate(Time = as.integer(substr(WD,3,4))) 
+# Glimpse the data
+glimpse(RATSL)
+# Check the dimensions of the data
+dim(RATSL)
+
+#Access the package ggplot2
+library(ggplot2)
+library(dplyr)
+library(tidyr)
+
+# Draw the plot
+ggplot(RATSL, aes(x = Time, y = Weight, group = ID)) +
+  geom_line(aes(linetype = Group)) +
+  scale_x_continuous(name = "Time (days)", breaks = seq(0, 60, 10)) +
+  scale_y_continuous(name = "Weight (grams)") +
+  theme(legend.position = "top")
+
+
+```
+
+New RATLS data has 176 obs. of  5 variables. It became longer because we combined time variable into one (WD) to avoid correlation. 
+In the plot we took into account the lognitudial nature of the data.
+
+```{r}
+## Means (average) for each rats groups across time
+
+# Number of weeks, baseline (week 0) included
+n <- RATSL$Time %>% unique() %>% length()
+
+# Summary data with mean and standard error 
+RATSS <- RATSL %>%
+  group_by(Group, Time) %>%
+  summarise( mean = mean(Weight), se = sd(Weight)/sqrt(n) ) %>%
+  ungroup()
+
+# Glimpse the data
+glimpse(RATSS)
+
+# Plot the mean profiles
+ggplot(RATSS, aes(x = Time, y = mean, linetype = Group, shape = Group)) +
+  geom_line() +
+  scale_linetype_manual(values = c(1,2,3)) +
+  geom_point(size=3) +
+  scale_shape_manual(values = c(1,2,3)) +
+  geom_errorbar(aes(ymin = mean - se, ymax = mean + se, linetype="1"), width=0.3) +
+  theme(legend.position = c(0.8,0.8)) +
+  scale_y_continuous(name = "mean(Weight) +/- se(Weight)")
+```
+ 
+ In this plot we see the means profile for three groups at each point of time. 
+We see an overlap respect to Weight in groups 2 and three. Anyway their dynamics is very similar across time while the group 1 completely differs in means. 
+
+```{r}
+## Outliners?
+
+ # Create a summary data by group and WD with mean as the summary variable
+RATSL8 <- RATSL %>%
+  filter(Time > 0) %>%
+  group_by(Group, WD) %>%
+  summarise( mean=mean(Weight) ) %>%
+  ungroup()
+
+# Glimpse the data
+glimpse(RATSL8)
+
+# Draw a boxplot of the mean versus group to see outliners
+ggplot(RATSL8, aes(x = Group, y = mean)) +
+  geom_boxplot() +
+  stat_summary(fun.y = "mean", geom = "point", shape=23, size=4, fill = "white") +
+  scale_y_continuous(name = "mean(Weight), Time")
+
+
+```
+ 
+ Here we test our data for outliners which can have an ifluntial impact. In the plot there are no outliners but the mean distribution in group 1 is somehow skew. We see that there is very big dustance between group 1 and groups 2 and 3.
+ 
+```{r}
+##  Anova test for group difference for all 3 groups
+diff <- aov(mean ~ Group, data = RATSL8)
+summary(diff)
+
+# filter to consider only group 2 and 3 which are more similar
+RATSL81 <- RATSL8 %>%
+  filter(mean > 400)
+# Perform a two-sample t-test
+t.test(mean ~ Group, data = RATSL81, var.equal = TRUE)
+```
+ 
+In Data Camp the t test for group difference in performed. We could not apply in RATS data because t test is only for 2 groups, but we have 3. Thus we apply anova test for group difference. Results wuth significant p-value show that there is the mean difference between groups. The same we  saw in previous boxplot when there are no outliners but groups are very different from ech other. I also tries to apply t.test for groups 2 and 3 but there are also differences between them.
+
+# Part 2. BPRS
+```{r}
+# Read the BPRS data (decription is in R script)
+BPRS <- read.table("https://raw.githubusercontent.com/KimmoVehkalahti/MABS/master/Examples/data/BPRS.txt", sep  =" ", header = T)
+# Factor treatment & subject
+BPRS$treatment <- factor(BPRS$treatment)
+BPRS$subject <- factor(BPRS$subject)
+# Convert to long form
+BPRSL <-  BPRS %>% gather(key = weeks, value = bprs, -treatment, -subject)
+# Extract the week number
+BPRSL <-  BPRSL %>% mutate(week = as.integer(substr(weeks,5,5)))
+# Take a glimpse at the BPRSL data
+glimpse(BPRSL)
+
+```
+
+Here we read BPRS data which I descriebed in R script and when again wrangle it to a long form. Finally we have BPRSL - 360 obs. on 5 variables. I also decided to apply Data Camp exercises and wrangle new BPRSL to a data without outliner (which is shown in the plot for treatment 2) and with Baseline measurements of the outcome variable. Later let's analyze the models for both data with and without baseline. 
+
+```{r}
+# The Linear model - ignore the time factor
+# create a regression model 
+BPRSL_reg <- lm( bprs ~ week + treatment, data = BPRSL)
+
+# print out a summary of the model
+summary(BPRSL_reg)
+
+```
+
+The simple linear model where we ignored the repeated-measures structure of the data has the followoing results. Week variable is significant. Its negative sign means that that there is decline in BPRS values over the eight weeks of the study in both treatment groups (the same results in boxplot in Data Camp). Treatment for group 2 is not significant. Adjusted R-squared tells that model explaind around 18% of observations.
+
+
+```{r}
+# The Random Intercept Model
+library(lme4)
+
+# Create a random intercept model
+BPRSL_ref <- lmer(bprs ~ week + treatment + (1 | subject), data = BPRSL, REML = FALSE)
+# Print the summary of the model
+summary(BPRSL_ref)
+
+```
+
+The Random Intercept Model presumes the symmetrical structure of the data. 
+In model parametrs we see the lower erros for variables but higher for intercept.
+
+```{r}
+# Random Intercept and Random Slope Model
+
+# create a random intercept and random slope model
+BPRSL_ref1 <- lmer(bprs ~ week + treatment + (week | subject), data = BPRSL, REML = FALSE)
+# print a summary of the model
+summary(BPRSL_ref1)
+
+# perform an ANOVA test on the two models
+anova(BPRSL_ref1, BPRSL_ref)
+```
+
+ Random Intercept and Random Slope Model allow us to consider the individual differences as well as time variance. In avova function which compares two models we see that the second model (Random Slope Model) is better (p-value is significant).
+ 
+```{r}
+
+#  Random intercept and random slope model with variables interaction
+BPRSL_ref2 <- lmer(bprs ~ week*treatment + (week | subject), data = BPRSL, REML = FALSE)
+# print a summary of the model
+summary(BPRSL_ref2)
+
+# perform an ANOVA test on the two models
+anova(BPRSL_ref2, BPRSL_ref1)
+
+```
+ Here we construct a random intercept and slope model that allow week and treatment intersection. In anova fucntion we see that this model is slightly better than previous one. So both BPRSL_ref1 and BPRSL_ref2 are quite good.
