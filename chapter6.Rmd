@@ -45,7 +45,7 @@ ggplot(RATSL, aes(x = Time, y = Weight, group = ID)) +
 ```
 
 New RATLS data has 176 obs. of  5 variables. It became longer because we combined time variable into one (WD) to avoid correlation. 
-In the plot we took into account the lognitudial nature of the data.
+In the plot we took into account the lognitudial nature of the data. We see a common trend in the weight increase across time but increase is higher in groups 2 and 3, in 1 is more constant.
 
 ```{r}
 ## Means (average) for each rats groups across time
@@ -74,7 +74,7 @@ ggplot(RATSS, aes(x = Time, y = mean, linetype = Group, shape = Group)) +
 ```
  
  In this plot we see the means profile for three groups at each point of time. 
-We see an overlap respect to Weight in groups 2 and three. Anyway their dynamics is very similar across time while the group 1 completely differs in means. 
+Groups 2 and 3 dynamics is very similar across time while the group 1 completely differs in means (the distance between this group and other two is big).
 
 ```{r}
 ## Outliners?
@@ -100,6 +100,8 @@ ggplot(RATSL8, aes(x = Group, y = mean)) +
  
  Here we test our data for outliners which can have an ifluntial impact. In the plot there are no outliners but the mean distribution in group 1 is somehow skew. We see that there is very big dustance between group 1 and groups 2 and 3.
  
+*With RATS data I implemented visual techiques. I ploted data and then applied summary measure approach that transforms the repeated measurements of the observations into a single value that captures some essential feature of the observations over time. It allowed us to compare the groups visually.*
+ 
 ```{r}
 ##  Anova test for group difference for all 3 groups
 diff <- aov(mean ~ Group, data = RATSL8)
@@ -112,7 +114,7 @@ RATSL81 <- RATSL8 %>%
 t.test(mean ~ Group, data = RATSL81, var.equal = TRUE)
 ```
  
-In Data Camp the t test for group difference in performed. We could not apply in RATS data because t test is only for 2 groups, but we have 3. Thus we apply anova test for group difference. Results wuth significant p-value show that there is the mean difference between groups. The same we  saw in previous boxplot when there are no outliners but groups are very different from ech other. I also tries to apply t.test for groups 2 and 3 but there are also differences between them.
+In Data Camp the t test for group difference in performed. We could not apply in RATS data because t test is only for 2 groups, but we have 3. Thus we apply anova test for group difference. Results wuth significant p-value show that there is the mean difference between groups. The same we  saw in previous boxplot when there are no outliners but groups are very different from ech other. I also tried to apply t.test for groups 2 and 3 but there are also differences between them.
 
 # Part 2. BPRS
 ```{r}
@@ -130,7 +132,7 @@ glimpse(BPRSL)
 
 ```
 
-Here we read BPRS data which I descriebed in R script and when again wrangle it to a long form. Finally we have BPRSL - 360 obs. on 5 variables. I also decided to apply Data Camp exercises and wrangle new BPRSL to a data without outliner (which is shown in the plot for treatment 2) and with Baseline measurements of the outcome variable. Later let's analyze the models for both data with and without baseline. 
+Here we read BPRS data which I descriebed in R script and when again wrangle it to a long form. Finally we have BPRSL - 360 obs. on 5 variables.  Later let's analyze the models for data. I decided not to make a baseline for outcome (as it is done in Data Camp) and to see how the results are.
 
 ```{r}
 # The Linear model - ignore the time factor
@@ -142,7 +144,7 @@ summary(BPRSL_reg)
 
 ```
 
-The simple linear model where we ignored the repeated-measures structure of the data has the followoing results. Week variable is significant. Its negative sign means that that there is decline in BPRS values over the eight weeks of the study in both treatment groups (the same results in boxplot in Data Camp). Treatment for group 2 is not significant. Adjusted R-squared tells that model explaind around 18% of observations.
+The simple linear model where we ignored the repeated-measures structure of the data has the followoing results. Week variable is significant. Its negative sign means that that there is decline in BPRS values over the eight weeks of the study in both treatment groups. Treatment for group 2 is not significant. Adjusted R-squared tells that model explaind around 18% of observations.
 
 
 ```{r}
@@ -157,7 +159,7 @@ summary(BPRSL_ref)
 ```
 
 The Random Intercept Model presumes the symmetrical structure of the data. 
-In model parametrs we see the lower erros for variables but higher for intercept.
+In model parameters we see the lower erros for variables but higher for intercept since model presumes that intercepts are allowed to vary for each individual observation. In the fixed effects we see that week and treatment2 are correlated with each other (the assumption of the fixed effects).
 
 ```{r}
 # Random Intercept and Random Slope Model
@@ -171,7 +173,8 @@ summary(BPRSL_ref1)
 anova(BPRSL_ref1, BPRSL_ref)
 ```
 
- Random Intercept and Random Slope Model allow us to consider the individual differences as well as time variance. In avova function which compares two models we see that the second model (Random Slope Model) is better (p-value is significant).
+ Random Intercept and Random Slope Model allow us to consider the individual differences as well as time variance. It presumes that explanatory variable can have a different effect for each group.
+ In avova function which compares two models we see that the second model (Random Slope Model) is better (p-value is significant).
  
 ```{r}
 
@@ -185,3 +188,5 @@ anova(BPRSL_ref2, BPRSL_ref1)
 
 ```
  Here we construct a random intercept and slope model that allow week and treatment intersection. In anova fucntion we see that this model is slightly better than previous one. So both BPRSL_ref1 and BPRSL_ref2 are quite good.
+ 
+*For BPRSL data I tested simple linear model and then tried Random Intercept and Random Slope Models. I compared the models results with anova() function.*
